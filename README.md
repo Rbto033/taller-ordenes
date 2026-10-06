@@ -43,7 +43,7 @@ Swagger: http://localhost:3000/api/docs
 
 ## Equipo
 
-| Integrante        |
+| Integrantes       |
 | ----------------- |
 | Roberto Robles    |
 | Francisco Chandia |
