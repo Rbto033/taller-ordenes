@@ -1,3 +1,4 @@
+// aplica la lógica de negocio para gestionar las órdenes de trabajo
 import 'dotenv/config';
 import {
   ConflictException,
@@ -45,6 +46,7 @@ export class WorkOrdersService {
   }
 
   async findOne(id: string) {
+    //validación de existencia de la orden antes de actualizarla o eliminarla
     const order = await this.repository.findOne(id, this.ownerId);
     if (!order) {
       throw new NotFoundException('Orden de trabajo no encontrada');
@@ -53,6 +55,7 @@ export class WorkOrdersService {
   }
 
   async update(id: string, dto: UpdateWorkOrderDto) {
+    //validación de actualización de estado
     const current = await this.findOne(id);
 
     if (
@@ -75,6 +78,7 @@ export class WorkOrdersService {
   }
 
   async remove(id: string) {
+    //validación de existencia de la orden antes de eliminarla
     await this.findOne(id);
     await this.repository.delete(id, this.ownerId);
     return { ok: true, id };

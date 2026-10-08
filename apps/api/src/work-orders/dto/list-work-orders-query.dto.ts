@@ -1,3 +1,4 @@
+// valida datos de entrada para listar órdenes de trabajo
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, Max, Min } from 'class-validator';

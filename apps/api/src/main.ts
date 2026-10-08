@@ -1,3 +1,5 @@
+//punto de entrada de la aplicación, donde se configura el servidor y se inicializa la aplicación NestJS
+
 import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -5,9 +7,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 
 async function bootstrap() {
+  //función principal que arranca la aplicación
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks();
 
+  // forbidNonWhitelisted rechaza con 400 si hay propiedades no definidas en el DTO, como por ejemplo ownerId, para que el cliente no pueda enviar datos que no debería.
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

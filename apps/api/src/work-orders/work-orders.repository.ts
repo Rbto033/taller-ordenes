@@ -1,3 +1,4 @@
+// se comunica con la base de datos a través del servicio de Prisma y realiza las operaciones CRUD
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';

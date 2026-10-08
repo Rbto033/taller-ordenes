@@ -1,3 +1,4 @@
+// valida datos de entrada para crear una orden de trabajo
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {

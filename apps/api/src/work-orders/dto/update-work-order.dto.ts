@@ -1,3 +1,4 @@
+// valida datos de entrada para actualizar una orden de trabajo
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import { WorkOrderStatus } from '../../generated/prisma/enums.js';
