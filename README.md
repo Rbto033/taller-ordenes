@@ -48,4 +48,4 @@ Swagger: http://localhost:3000/api/docs
 | Roberto Robles    |
 | Francisco Chandia |
 | Ruth Navarro      |
-| Agustín Alvares  |
+| Agustín Alvarez  |
