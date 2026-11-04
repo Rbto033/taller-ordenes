@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { WorkOrderPriority, WorkOrderStatus } from '../../generated/prisma/client.js';
+import { WorkOrderStatus } from '../../generated/prisma/client.js';
 
 export class CreateWorkOrderDto {
   @ApiProperty({ example: 'Cambio de aceite' })
@@ -16,12 +16,7 @@ export class CreateWorkOrderDto {
   @Min(0)
   estimatedCost!: number;
 
-  @ApiPropertyOptional({ enum: WorkOrderPriority, default: WorkOrderPriority.MEDIUM })
-  @IsOptional()
-  @IsEnum(WorkOrderPriority)
-  priority?: WorkOrderPriority;
-
-  @ApiPropertyOptional({ enum: WorkOrderStatus, default: WorkOrderStatus.PENDING })
+  @ApiPropertyOptional({ enum: WorkOrderStatus, default: WorkOrderStatus.RECEIVED })
   @IsOptional()
   @IsEnum(WorkOrderStatus)
   status?: WorkOrderStatus;

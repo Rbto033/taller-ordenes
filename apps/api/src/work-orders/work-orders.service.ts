@@ -15,7 +15,6 @@ export class WorkOrdersService {
         title: dto.title,
         vehiclePlate: dto.vehiclePlate,
         estimatedCost: dto.estimatedCost,
-        priority: dto.priority,
         status: dto.status,
         ownerId,
       },
