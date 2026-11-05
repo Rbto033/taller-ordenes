@@ -32,7 +32,12 @@ async function bootstrap() {
     .setTitle('Taller API')
     .setDescription('API REST para órdenes de trabajo de un taller mecánico')
     .setVersion('1.0')
+    .addTag('auth', 'Registro, acceso e identidad actual')
     .addTag('work-orders', 'Operaciones sobre órdenes de trabajo')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'access-token',
+    )
     .build();
 
   const documentFactory = () =>

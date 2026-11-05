@@ -25,12 +25,21 @@ export function apiErrorMessage(error: unknown, writing = false): string {
           "La API rechazó los datos enviados."
         );
       }
+      if (status === 401) {
+        return serverMessage(error.response.data) ?? "Acceso no autorizado.";
+      }
       if (status === 404) {
-        return "Ruta no encontrada. Comprueba /work-orders y la URL de la API.";
+        return "Recurso no encontrado o no disponible para tu cuenta.";
+      }
+      if (status === 409) {
+        return "El correo ya está registrado. Intenta iniciar sesión.";
+      }
+      if (status === 429) {
+        return "Demasiados intentos. Espera un minuto antes de volver a intentar.";
       }
       if (status >= 500) {
         return writing
-          ? "La API devolvió un error. Comprueba el listado antes de repetir la creación."
+          ? "La API devolvió un error. Comprueba el listado antes de repetir la escritura."
           : "La API devolvió un error interno. Revisa la terminal del backend.";
       }
       return `La API respondió HTTP ${status}.`;

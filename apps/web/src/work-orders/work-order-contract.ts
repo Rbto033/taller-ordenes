@@ -17,12 +17,16 @@ export interface WorkOrder {
 
 export interface CreateWorkOrderInput {
   title: string;
+  description?: string;
   vehiclePlate: string;
   estimatedCost: number;
 }
 
 export const PAGE_SIZE = 20;
+export const MAX_DESCRIPTION = 500;
 const MAX_COST = 2_147_483_647;
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const PLATE_PATTERN = /^([A-Z]{4}\d{2}|[A-Z]{2}\d{4})$/;
 
 export const PRIORITY_LABEL: Record<Priority, string> = {
@@ -50,7 +54,7 @@ function isWorkOrder(value: unknown): value is WorkOrder {
   if (!isRecord(value)) return false;
   return (
     typeof value.id === "string" &&
-    value.id.length > 0 &&
+    UUID_PATTERN.test(value.id) &&
     typeof value.title === "string" &&
     (value.description === null || typeof value.description === "string") &&
     typeof value.priority === "string" &&
@@ -64,7 +68,7 @@ function isWorkOrder(value: unknown): value is WorkOrder {
     Number.isInteger(value.estimatedCost) &&
     value.estimatedCost >= 0 &&
     typeof value.ownerId === "string" &&
-    value.ownerId.length > 0 &&
+    UUID_PATTERN.test(value.ownerId) &&
     isDateString(value.createdAt) &&
     isDateString(value.updatedAt)
   );
@@ -92,6 +96,7 @@ export function createWorkOrderInput(
   title: string,
   vehiclePlate: string,
   estimatedCost: string,
+  description = "",
 ): CreateWorkOrderInput {
   const normalizedTitle = title.trim();
   if (normalizedTitle.length === 0 || normalizedTitle.length > 200) {
@@ -116,5 +121,17 @@ export function createWorkOrderInput(
     cost = Number(rawCost);
   }
 
-  return { title: normalizedTitle, vehiclePlate: plate, estimatedCost: cost };
+  const normalizedDescription = description.trim();
+  if (normalizedDescription.length > MAX_DESCRIPTION) {
+    throw new Error(
+      `La descripción no puede superar los ${MAX_DESCRIPTION} caracteres.`,
+    );
+  }
+
+  return {
+    title: normalizedTitle,
+    ...(normalizedDescription ? { description: normalizedDescription } : {}),
+    vehiclePlate: plate,
+    estimatedCost: cost,
+  };
 }

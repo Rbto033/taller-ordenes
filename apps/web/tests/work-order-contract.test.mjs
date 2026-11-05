@@ -92,3 +92,27 @@ test("el costo vacío vale 0 y rechaza negativos, decimales y excesos", () => {
     /costo/,
   );
 });
+
+test("rechaza un id o ownerId que no sea UUID", () => {
+  assert.throws(() => parseWorkOrder({ ...order, id: "123" }));
+  assert.throws(() => parseWorkOrder({ ...order, ownerId: "no-uuid" }));
+});
+
+test("envía la descripción recortada solo si existe y respeta el máximo", () => {
+  assert.deepEqual(
+    createWorkOrderInput("Frenos", "ABCD12", "", "  Ruido al frenar "),
+    {
+      title: "Frenos",
+      description: "Ruido al frenar",
+      vehiclePlate: "ABCD12",
+      estimatedCost: 0,
+    },
+  );
+  assert.equal(
+    "description" in createWorkOrderInput("Frenos", "ABCD12", "", "   "),
+    false,
+  );
+  assert.throws(() =>
+    createWorkOrderInput("Frenos", "ABCD12", "", "x".repeat(501)),
+  );
+});

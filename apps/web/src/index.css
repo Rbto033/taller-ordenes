@@ -38,7 +38,8 @@ label {
   font-weight: 700;
   margin: 0.8rem 0 0.4rem;
 }
-input {
+input,
+textarea {
   width: 100%;
   padding: 0.7rem;
   border: 1px solid #657b91;
@@ -107,5 +108,12 @@ a:focus-visible {
   margin: 0.35rem 0;
 }
 .pagination {
+  margin-top: 1rem;
+}
+
+form input + label {
+  margin-top: 0.75rem;
+}
+section > button {
   margin-top: 1rem;
 }

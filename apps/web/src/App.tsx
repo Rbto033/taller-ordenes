@@ -2,35 +2,49 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiErrorMessage } from "./api-error.ts";
+import { getSession } from "./auth/session-store.ts";
+import type { Session } from "./auth/session-store.ts";
 import {
   createWorkOrder,
   listWorkOrders,
 } from "./work-orders/work-orders.api.ts";
 import {
   createWorkOrderInput,
+  MAX_DESCRIPTION,
   PAGE_SIZE,
   PRIORITY_LABEL,
   STATUS_LABEL,
 } from "./work-orders/work-order-contract.ts";
 
-export default function App() {
+export default function App({
+  session,
+  onLogout,
+}: {
+  session: Session;
+  onLogout: () => void;
+}) {
   const client = useQueryClient();
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [plate, setPlate] = useState("");
   const [cost, setCost] = useState("");
   const [skip, setSkip] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [inputError, setInputError] = useState("");
 
+  const scope = ["work-orders", session.user.sub, session.id] as const;
+
   const ordersQuery = useQuery({
-    queryKey: ["work-orders", { skip, take: PAGE_SIZE }],
+    queryKey: [...scope, { skip, take: PAGE_SIZE }],
     queryFn: ({ signal }) => listWorkOrders(skip, PAGE_SIZE, signal),
   });
 
   const createMutation = useMutation({
     mutationFn: createWorkOrder,
     onSuccess: async () => {
+      if (getSession()?.id !== session.id) return;
       setTitle("");
+      setDescription("");
       setPlate("");
       setCost("");
       setInputError("");
@@ -38,7 +52,7 @@ export default function App() {
         "Orden creada. Si el listado no se actualiza, reintenta solo la lectura.",
       );
       setSkip(0);
-      await client.invalidateQueries({ queryKey: ["work-orders"] });
+      await client.invalidateQueries({ queryKey: scope });
     },
   });
 
@@ -61,7 +75,9 @@ export default function App() {
     if (busy) return;
     clearMessages();
     try {
-      createMutation.mutate(createWorkOrderInput(title, plate, cost));
+      createMutation.mutate(
+        createWorkOrderInput(title, plate, cost, description),
+      );
     } catch (error) {
       setInputError(apiErrorMessage(error));
     }
@@ -72,10 +88,11 @@ export default function App() {
       <header>
         <p className="eyebrow">Taller mecánico</p>
         <h1>Órdenes de trabajo</h1>
-        <p>Consulta y registra órdenes del propietario de demostración.</p>
-        <p className="notice">
-          Entorno didáctico sin inicio de sesión. No ingresar datos sensibles.
-        </p>
+        <p>Sesión de {session.user.name || session.user.email}</p>
+        <p className="muted">{session.user.email}</p>
+        <button type="button" onClick={onLogout}>
+          Cerrar sesión
+        </button>
       </header>
 
       <section aria-labelledby="create-heading">
@@ -92,6 +109,20 @@ export default function App() {
             }}
             maxLength={200}
             required
+            disabled={busy}
+          />
+
+          <label htmlFor="wo-description">Descripción (opcional)</label>
+          <textarea
+            id="wo-description"
+            name="description"
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              clearMessages();
+            }}
+            maxLength={MAX_DESCRIPTION}
+            rows={3}
             disabled={busy}
           />
 
@@ -150,7 +181,7 @@ export default function App() {
 
       <section aria-labelledby="list-heading">
         <div className="section-heading">
-          <h2 id="list-heading">Órdenes</h2>
+          <h2 id="list-heading">Mis órdenes</h2>
           <button
             type="button"
             onClick={() => void ordersQuery.refetch()}

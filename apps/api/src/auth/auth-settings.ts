@@ -15,7 +15,13 @@ export function readAuthSettings(
     throw new Error('JWT_SECRET debe contener al menos 32 bytes aleatorios.');
   }
   const raw = env.JWT_EXPIRES_IN ?? '900';
+  if (!/^\d+$/.test(raw)) {
+    throw new Error('JWT_EXPIRES_IN debe ser un entero en segundos.');
+  }
   const expiresIn = Number(raw);
+  if (!Number.isSafeInteger(expiresIn) || expiresIn < 60 || expiresIn > 3600) {
+    throw new Error('JWT_EXPIRES_IN debe estar entre 60 y 3600 segundos.');
+  }
   return {
     secret,
     expiresIn,

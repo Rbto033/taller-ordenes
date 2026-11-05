@@ -13,6 +13,7 @@ export class WorkOrdersService {
     return this.prisma.workOrder.create({
       data: {
         title: dto.title,
+        description: dto.description,
         vehiclePlate: dto.vehiclePlate,
         estimatedCost: dto.estimatedCost,
         status: dto.status,
